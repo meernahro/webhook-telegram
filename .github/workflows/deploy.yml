@@ -39,3 +39,5 @@ jobs:
               -e BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }} \
               -e BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }} \
               fastapi-app:latest
+
+#
