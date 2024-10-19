@@ -6,35 +6,8 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run tests
-        run: |
-          # Add your test commands here
-          echo "Tests would run here"
-
-      - name: Build Docker image
-        run: |
-          docker build -t flask-app .
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build
 
     steps:
       - name: SSH into server and deploy
@@ -45,7 +18,15 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            docker pull flask-app:latest
-            docker stop flask-app || true
-            docker rm flask-app || true
-            docker run -d -p 80:5000 --name flask-app flask-app:latest
+            cd ~  # Go to the home directory on the server
+            if [ ! -d "webhook-telegram" ]; then
+              git clone https://github.com/YOUR_GITHUB_USERNAME/webhook-telegram.git
+            else
+              cd webhook-telegram
+              git pull origin main  # Pull the latest code
+            fi
+            docker stop flask-app || true  # Stop any existing container
+            docker rm flask-app || true    # Remove the old container
+            docker rmi flask-app || true   # Remove the old image
+            docker build -t flask-app .    # Build the new image from the latest code
+            docker run -d -p 80:5000 --name flask-app flask-app:latest  # Run the new container
