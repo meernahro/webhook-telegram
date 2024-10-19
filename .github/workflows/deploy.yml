@@ -33,4 +33,4 @@ jobs:
               echo "Dockerfile not found, exiting."
               exit 1
             fi
-            docker run -d -p 80:5000 --name flask-app -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} -e TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }} flask-app:latest
+            docker run -d -p 5000:5000 --name flask-app -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} -e TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }} flask-app:latest
