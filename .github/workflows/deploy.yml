@@ -18,19 +18,24 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd ~  # Go to the home directory
+            cd ~
             if [ ! -d "webhook-telegram" ]; then
               git clone https://github.com/meernahro/webhook-telegram.git
             fi
-            cd webhook-telegram  # Ensure you're in the project directory
-            git pull origin main  # Pull the latest changes
-            docker stop flask-app || true  # Stop any running container
-            docker rm flask-app || true    # Remove the old container
-            docker rmi flask-app || true   # Remove the old image
+            cd webhook-telegram
+            git pull origin main
+            docker stop fastapi-app || true
+            docker rm fastapi-app || true
+            docker rmi fastapi-app || true
             if [ -f Dockerfile ]; then
-              docker build -t flask-app .    # Build the new image
+              docker build -t fastapi-app .
             else
               echo "Dockerfile not found, exiting."
               exit 1
             fi
-            docker run -d -p 5000:5000 --name flask-app -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} -e TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }} flask-app:latest
+            docker run -d -p 8000:8000 --name fastapi-app \
+              -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
+              -e TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }} \
+              -e BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }} \
+              -e BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }} \
+              fastapi-app:latest
