@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: SSH into server and deploy
-        uses: appleboy/ssh-action@v0.1.3
+        uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.HETZNER_SERVER_IP }}
           username: ${{ secrets.HETZNER_SERVER_USER }}
