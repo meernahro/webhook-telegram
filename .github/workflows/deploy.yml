@@ -20,7 +20,7 @@ jobs:
           script: |
             cd ~  # Go to the home directory on the server
             if [ ! -d "webhook-telegram" ]; then
-              git clone https://github.com/YOUR_GITHUB_USERNAME/webhook-telegram.git
+              git clone https://github.com/meernahro/webhook-telegram.git
             else
               cd webhook-telegram
               git pull origin main  # Pull the latest code
