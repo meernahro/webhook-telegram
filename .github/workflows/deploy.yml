@@ -18,15 +18,19 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd ~  # Go to the home directory on the server
+            cd ~  # Go to the home directory
             if [ ! -d "webhook-telegram" ]; then
               git clone https://github.com/meernahro/webhook-telegram.git
-            else
-              cd webhook-telegram
-              git pull origin main  # Pull the latest code
             fi
-            docker stop flask-app || true  # Stop any existing container
+            cd webhook-telegram  # Ensure you're in the project directory
+            git pull origin main  # Pull the latest changes
+            docker stop flask-app || true  # Stop any running container
             docker rm flask-app || true    # Remove the old container
             docker rmi flask-app || true   # Remove the old image
-            docker build -t flask-app .    # Build the new image from the latest code
+            if [ -f Dockerfile ]; then
+              docker build -t flask-app .    # Build the new image
+            else
+              echo "Dockerfile not found, exiting."
+              exit 1
+            fi
             docker run -d -p 80:5000 --name flask-app flask-app:latest  # Run the new container
